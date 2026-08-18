@@ -1,0 +1,94 @@
+# libFuzzer dictionary for the fuzz_regexp target (libregexp, via fuzz/fuzz_regexp.c).
+#
+# The harness splits its input on the FIRST NUL byte: everything before it is the regexp
+# PATTERN, everything after is the SUBJECT. The pattern half is regexp source, so regexp
+# syntax tokens are exactly the right vocabulary -- upstream's fuzz/fuzz.dict (JS builtin
+# identifiers) is not, which is why this target was previously given no dictionary at all.
+# The NUL separator itself is included so the mutator can produce well-formed two-part inputs.
+#
+# Escaping: only \\, \" and \xHH are legal in a libFuzzer dictionary. A regexp backslash is
+# therefore written "\\"; a literal \n would abort dict parsing before the first input and
+# silently disable fuzzing for the whole run.
+
+sep="\x00"
+
+# quantifiers / repetition
+star="*"
+plus="+"
+opt="?"
+lazy="*?"
+possessive="*+"
+rep_n="{2}"
+rep_n_="{2,}"
+rep_n_m="{2,5}"
+rep_lazy="{2,5}?"
+
+# anchors and boundaries
+caret="^"
+dollar="$"
+word_b="\\b"
+not_word_b="\\B"
+
+# groups / alternation / backrefs
+group="()"
+ncgroup="(?:)"
+named="(?<name>)"
+namedref="\\k<name>"
+lookahead="(?=)"
+neg_lookahead="(?!)"
+lookbehind="(?<=)"
+neg_lookbehind="(?<!)"
+alt="|"
+backref_1="\\1"
+backref_9="\\9"
+
+# character classes
+class="[]"
+neg_class="[^]"
+range_az="[a-z]"
+range_09="[0-9]"
+class_dash="[a-]"
+class_bracket="[\\]]"
+nested_union="[\\w-[a-c]]"
+dot="."
+d_class="\\d"
+D_class="\\D"
+w_class="\\w"
+W_class="\\W"
+s_class="\\s"
+S_class="\\S"
+
+# escapes that take arguments -- classic overflow/parser-edge surface
+hex_esc="\\x41"
+short_hex="\\x"
+unicode_esc="\\u0041"
+brace_unicode="\\u{1F600}"
+bad_brace_unicode="\\u{110000}"
+octal="\\077"
+null_esc="\\0"
+ctrl_esc="\\cA"
+identity_esc="\\/"
+
+# unicode property escapes (the /u and /v grammar)
+prop="\\p{L}"
+prop_neg="\\P{L}"
+prop_script="\\p{Script=Greek}"
+prop_gc="\\p{General_Category=Letter}"
+prop_bad="\\p{}"
+
+# POSIX-style names quickjs must reject rather than mis-parse
+posix_alpha="[:alpha:]"
+posix_in_class="[[:alpha:]]"
+
+# nesting / pathological shapes (catastrophic-backtracking and depth surface)
+nested_group="((((()))))"
+nested_quant="(a*)*"
+nested_quant2="(a+)+"
+alt_quant="(a|a)*"
+deep_class="[[[[]]]]"
+empty_alt="(|)"
+dangling_open="("
+dangling_close=")"
+dangling_class="["
+lone_backslash="\\"
+lone_brace="{"
