@@ -1,0 +1,17 @@
+# New target (upstream's own fuzz/fuzz_regexp.c -- also OSS-Fuzz's canonical `fuzz_regexp`; the
+# legacy mayhemheroes fork shipped the harness source but never wired a Mayhemfile for it).
+# Exercises libregexp directly (lre_compile + lre_exec), bypassing the JS engine entirely.
+# Input format: <pattern-bytes> NUL <subject-bytes> -- see mayhem/fuzz_regexp/testsuite seeds.
+project: savantenvs/quickjs
+target: fuzz_regexp
+testsuite:
+  - https://$MAYHEM_DOMAIN/$MAYHEM_PROJECT/$MAYHEM_TARGET/testsuite.tar
+  - file://mayhem/fuzz_regexp/testsuite
+cmds:
+  - cmd: /mayhem/fuzz_regexp
+    libfuzzer: true
+
+    # Regexp-syntax dictionary (quantifiers, char classes, groups, \p{...} property escapes,
+    # pathological nesting) plus the \x00 pattern/subject separator the harness splits on.
+    # Deliberately NOT upstream fuzz/fuzz.dict -- that is JS builtin identifiers, wrong for this target.
+    dictionary: /mayhem/fuzz_regexp.dict
