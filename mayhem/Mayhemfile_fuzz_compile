@@ -1,0 +1,15 @@
+# Historical Mayhem target (mayhemheroes/quickjs, target `fuzz_compile` since 2020) -- keep the
+# exact name so run history/defects aren't orphaned. This is now upstream's OWN libFuzzer harness
+# (fuzz/fuzz_compile.c, also the OSS-Fuzz project's canonical target -- see
+# oss-fuzz/projects/quickjs/build.sh) rather than the legacy hand-written mayhem/fuzz_compile.c:
+# it compiles a script to bytecode, round-trips it through JS_WriteObject/JS_ReadObject, then
+# evaluates it as an ES module.
+project: savantenvs/quickjs
+target: fuzz_compile
+testsuite:
+  - https://$MAYHEM_DOMAIN/$MAYHEM_PROJECT/$MAYHEM_TARGET/testsuite.tar
+  - file://mayhem/fuzz_compile/testsuite
+cmds:
+  - cmd: /mayhem/fuzz_compile
+    libfuzzer: true
+    dictionary: /mayhem/fuzz_compile.dict

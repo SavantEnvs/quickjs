@@ -1,0 +1,13 @@
+# New target (upstream's own fuzz/fuzz_eval.c -- also OSS-Fuzz's canonical `fuzz_eval`; the
+# legacy mayhemheroes fork never wired a Mayhemfile for it, only fuzz_compile). Evaluates a
+# script directly with JS_Eval (JS_EVAL_TYPE_GLOBAL) -- the plain interpreter path, complementary
+# to fuzz_compile's bytecode-serialization round-trip.
+project: savantenvs/quickjs
+target: fuzz_eval
+testsuite:
+  - https://$MAYHEM_DOMAIN/$MAYHEM_PROJECT/$MAYHEM_TARGET/testsuite.tar
+  - file://mayhem/fuzz_eval/testsuite
+cmds:
+  - cmd: /mayhem/fuzz_eval
+    libfuzzer: true
+    dictionary: /mayhem/fuzz_eval.dict

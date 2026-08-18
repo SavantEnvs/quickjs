@@ -1,0 +1,23 @@
+# .dockerignore for the commit-image build.
+# Goal: bake in the FULL repo (including .git history — the grader uses it),
+# dropping only local build artifacts and editor/OS cruft. Dev image, not minimal.
+
+# ── Build outputs / local cruft ──────────────────────────────────────────────
+# QuickJS's own Makefile writes here for a local dev build; mayhem/build.sh rebuilds
+# from source inside the image, so none of this needs to ride along in the context.
+.obj/
+*.o
+*.a
+*.so
+*.dylib
+qjs
+qjsc
+host-qjsc
+run-test262
+repl.c
+**/__pycache__/
+
+# ── Editor / OS noise ────────────────────────────────────────────────────────
+.DS_Store
+*.swp
+*~
